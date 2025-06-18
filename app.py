@@ -6,7 +6,7 @@ import plotly.express as px
 st.title("Love Island USA Season 7 - Islander Sentiment Tracker")
 
 # Load the data
-df = pd.read_csv("/Users/tuckertrost/Documents/Personal Projects/Senior Project/li_full.csv")
+df = pd.read_csv("li_full.csv")
 
 # Convert AirDate to datetime
 df["AirDate"] = pd.to_datetime(df["AirDate"])
