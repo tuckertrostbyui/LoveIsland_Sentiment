@@ -1,4 +1,5 @@
 streamlit
 requests
-plotly_express
+plotly
+pandas
 python-dotenv
