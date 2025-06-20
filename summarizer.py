@@ -39,3 +39,11 @@ def summarize_comments(comments,summarizer):
         return response.text
     except Exception as e:
         return f"Error during summarization: {e}"
+
+def classify_sentiment(score):
+  if score >= 0.05:
+    return 'Positive'
+  elif score <= -0.05:
+    return 'Negative'
+  else:
+    return 'Neutral'
