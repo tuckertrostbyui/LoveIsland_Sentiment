@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from summarizer import load_summarizer, summarize_comments
 
 # Title
 st.title("Love Island USA Season 7 - Islander Sentiment Tracker")
@@ -40,3 +41,14 @@ fig.update_layout(xaxis=dict(tickmode="linear"))
 
 # Show chart
 st.plotly_chart(fig, use_container_width=True)
+
+# Summarizer
+
+st.write(f'What are people saying about {selected_islander}')
+summarizer = load_summarizer()
+
+comments = df[df['islander']== selected_islander]['comment'].tolist()
+
+if st.button('Summarize Comments'):
+    with st.spinner('Summarizing Reddit Comments...'):
+        st.write(summarize_comments(comments, summarizer))
