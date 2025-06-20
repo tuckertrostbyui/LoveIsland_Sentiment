@@ -3,7 +3,11 @@ import pandas as pd
 import plotly.express as px
 from summarizer import load_summarizer, summarize_comments, classify_sentiment
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Love Island Sentiment",  
+    page_icon="🏝️", 
+    layout="wide"
+)
 
 # Title
 st.markdown("<h1 style='text-align: center; color: Black;'>🏝️Love Island USA - Islander Breakdown🏝️</h1>", unsafe_allow_html=True)
