@@ -79,11 +79,12 @@ with tab1:
 
     summarizer = load_summarizer()
 
-    comments = df[df['islander']== selected_islander]['comment'].tolist()
+    comments_df = df[df['islander'] == selected_islander][['comment', 'score']]
 
     if st.button('Summarize Comments'):
         with st.spinner('Summarizing Reddit Comments...'):
-            st.write(summarize_comments(comments, summarizer))
+            st.write(summarize_comments(comments_df, summarizer))
+
 
 with tab2:
     st.markdown("""
