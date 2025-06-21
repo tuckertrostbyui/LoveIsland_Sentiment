@@ -17,7 +17,7 @@ st.markdown("<h6 style='text-align: center; color: gray;'>Analysing Reddit Senti
 df = pd.read_csv("li_initial.csv")
 
 # Convert AirDate to datetime
-df["AirDate"] = pd.to_datetime(df["AirDate"])
+df["airdate"] = pd.to_datetime(df["airdate"])
 
 tab1, tab2 = st.tabs(['Dashboard','Info'])
 
@@ -29,10 +29,10 @@ with tab1:
     # Filter for selected islander and group by episode
     filtered = df[df["islander"] == selected_islander]
     grouped = (
-        filtered.groupby(["episode_num", "AirDate"])
+        filtered.groupby(["episode_num", "airdate"])
         .agg(avg_sentiment=("sentiment", "mean"))
         .reset_index()
-        .sort_values("AirDate")
+        .sort_values("airdate")
         .assign(
             sentiment_classification = lambda x: x.avg_sentiment.apply(classify_sentiment)
         )
@@ -83,7 +83,7 @@ with tab1:
 
     if st.button('Summarize Comments'):
         with st.spinner('Summarizing Reddit Comments...'):
-            st.write(summarize_comments(comments_df, summarizer))
+            st.write(summarize_comments(comments_df, summarizer,selected_islander))
 
 
 with tab2:

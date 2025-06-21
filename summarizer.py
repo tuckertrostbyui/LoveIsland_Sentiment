@@ -37,7 +37,7 @@ def prepare_text_for_summary(df, max_comments=50, max_chars=3000):
     return combined[:max_chars]
 
 
-def summarize_comments(comments, summarizer):
+def summarize_comments(comments, summarizer,selected_islander):
     # Check for empty DataFrame
     if comments.empty:
         return "No comments available."
@@ -46,7 +46,7 @@ def summarize_comments(comments, summarizer):
     text = prepare_text_for_summary(comments)
 
     # Frame the prompt
-    prompt = f"Summarize what people are saying about this person:\n{text}"
+    prompt = f"Summarize what people are saying about {selected_islander}:\n{text}"
 
     # Generate summary using Gemini
     try:
