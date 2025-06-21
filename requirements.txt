@@ -7,3 +7,10 @@ sentencepiece
 google-generativeai
 google-genai
 python-dotenv
+praw
+re
+datetime
+nltk
+ast
+torch
+numpy
