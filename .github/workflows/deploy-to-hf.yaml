@@ -1,0 +1,27 @@
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches:
+      - main  # Change this if you deploy from a different branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your GitHub repo
+        uses: actions/checkout@v3
+
+      - name: Sync with Hugging Face Space
+        run: |
+          git config --global user.email "tro18011@byui.edu"
+          git config --global user.name "Tucker Trost"
+
+          git clone https://YOUR_HF_TOKEN@huggingface.co/spaces/tuckertrostbyui/loveisland_app space
+          rsync -av --exclude='.git' . space/
+          cd space
+          git add .
+          git commit -m "Auto-sync from GitHub"
+          git push
+        env:
+          YOUR_HF_TOKEN: ${{ secrets.HF_TOKEN }}
