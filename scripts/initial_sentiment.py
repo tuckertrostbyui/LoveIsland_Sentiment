@@ -8,7 +8,7 @@ from nltk.tokenize import sent_tokenize
 nltk.download('punkt')
 import ast
 import datetime as dt
-from airdate_scrape import scrape_airdates
+from scripts.airdate_scrape import scrape_airdates
 
 # Load Model
 tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
@@ -41,7 +41,7 @@ def targeted_sentiment(comment, islanders):
 
 # Load Data
 
-all_comments = pd.read_csv('season7_all_episode_comments.csv')
+all_comments = pd.read_csv('data/season7_all_episode_comments.csv')
 episode_airdates = scrape_airdates(7)
 
 islanders = ['Chelley','Olandria','Huda','Ace','Nic','Taylor','Jeremiah','Austin','Charlie','Cierra','Hannah','Amaya','Pepe','Jalen','Iris','Yulissa','Belle-A']
