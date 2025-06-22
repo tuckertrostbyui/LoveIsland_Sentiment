@@ -17,7 +17,8 @@ jobs:
           git config --global user.email "tro18011@byui.edu"
           git config --global user.name "Tucker Trost"
 
-          git clone https://YOUR_HF_TOKEN@huggingface.co/spaces/tuckertrostbyui/loveisland_app space
+          git clone https://$YOUR_HF_TOKEN@huggingface.co/spaces/tuckertrostbyui/loveisland_app space
+
           rsync -av --exclude='.git' . space/
           cd space
           git add .
