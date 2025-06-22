@@ -1,3 +1,1 @@
 # LoveIsland_Sentiment
-
-hello!
