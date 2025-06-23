@@ -1,4 +1,5 @@
 import streamlit as st
+import glob
 import pandas as pd
 import plotly.express as px
 from scripts.summarizer import load_summarizer, summarize_comments, classify_sentiment
@@ -14,7 +15,8 @@ st.markdown("<h1 style='text-align: center; color: Black;'>🏝️Love Island US
 st.markdown("<h6 style='text-align: center; color: gray;'>Analysing Reddit Sentiment of Love Island USA Season 7</h6>", unsafe_allow_html=True)
 
 # Load the data
-df = pd.read_parquet("data/li_initial.parquet")
+parquet_files = glob.glob("data/comment_updates/*.parquet")
+df = pd.concat([pd.read_parquet(f) for f in parquet_files], ignore_index=True)
 
 # Convert AirDate to datetime
 df["airdate"] = pd.to_datetime(df["airdate"])

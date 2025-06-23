@@ -9,6 +9,7 @@ nltk.download('punkt')
 import ast
 import datetime as dt
 from scripts.airdate_scrape import scrape_airdates
+from scripts.islander_scrape import scrape_islanders
 
 # Load Model
 tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
@@ -41,10 +42,10 @@ def targeted_sentiment(comment, islanders):
 
 # Load Data
 
-all_comments = pd.read_csv('data/season7_all_episode_comments.csv')
-episode_airdates = scrape_airdates(7)
+# all_comments = pd.read_parquet('../data/season7_all_episode_comments.parquet')
+# episode_airdates = scrape_airdates(7)
 
-islanders = ['Chelley','Olandria','Huda','Ace','Nic','Taylor','Jeremiah','Austin','Charlie','Cierra','Hannah','Amaya','Pepe','Jalen','Iris','Yulissa','Belle-A']
+islanders = scrape_islanders(7)['name'].to_list()
 
 def extract_episode_number(title):
     match = re.search(r'Episode (\d+)', title)
@@ -52,22 +53,22 @@ def extract_episode_number(title):
         return int(match.group(1))
     return None
 
-li_initial = all_comments\
-    .assign(
-        islander_sentiment = lambda x: x.comment.apply(lambda x: targeted_sentiment(x,islanders))
-    )\
-    .assign(islander_sentiment=lambda df: df['islander_sentiment'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x))\
-    .loc[lambda df: df['islander_sentiment'].apply(lambda x: isinstance(x, dict) and len(x) > 0)]\
-    .assign(islander_sentiment_items=lambda df: df['islander_sentiment'].apply(lambda d: list(d.items())))\
-    .explode('islander_sentiment_items')\
-    .assign(**{
-        'islander': lambda df: df['islander_sentiment_items'].apply(lambda x: x[0]),
-        'sentiment': lambda df: df['islander_sentiment_items'].apply(lambda x: x[1])
-    })\
-    .drop(columns=['islander_sentiment_items'])\
-    .assign(
-        episode_num = lambda x: x.episode_title.apply(extract_episode_number)
-    )\
-    .merge(episode_airdates[['episode_num','airdate']],on='episode_num',how='left')
+# li_initial = all_comments\
+#     .assign(
+#         islander_sentiment = lambda x: x.comment.apply(lambda x: targeted_sentiment(x,islanders))
+#     )\
+#     .assign(islander_sentiment=lambda df: df['islander_sentiment'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) else x))\
+#     .loc[lambda df: df['islander_sentiment'].apply(lambda x: isinstance(x, dict) and len(x) > 0)]\
+#     .assign(islander_sentiment_items=lambda df: df['islander_sentiment'].apply(lambda d: list(d.items())))\
+#     .explode('islander_sentiment_items')\
+#     .assign(**{
+#         'islander': lambda df: df['islander_sentiment_items'].apply(lambda x: x[0]),
+#         'sentiment': lambda df: df['islander_sentiment_items'].apply(lambda x: x[1])
+#     })\
+#     .drop(columns=['islander_sentiment_items'])\
+#     .assign(
+#         episode_num = lambda x: x.episode_title.apply(extract_episode_number)
+#     )\
+#     .merge(episode_airdates[['episode_num','airdate']],on='episode_num',how='left')
 
-li_initial.to_csv('li_initial.csv',index=False)
+# li_initial.to_parquet('li_initial.parquet',index=False)
