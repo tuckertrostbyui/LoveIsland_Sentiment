@@ -11,3 +11,4 @@ praw
 nltk
 torch
 numpy
+spacy

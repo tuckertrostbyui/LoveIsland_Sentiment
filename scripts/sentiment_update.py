@@ -1,13 +1,15 @@
 import pandas as pd
 import ast
-from scripts.reddit_api import reddit , update_with_new_episodes
-from scripts.initial_sentiment import targeted_sentiment, extract_episode_number, islanders
-from scripts.airdate_scrape import scrape_airdates
+from reddit_api import reddit , update_with_new_episodes
+from initial_sentiment import targeted_sentiment, extract_episode_number
+from airdate_scrape import scrape_airdates
+from islander_scrape import scrape_islanders
 
 def apply_sentiment():
 
     comment_update = update_with_new_episodes(reddit)
     episode_airdates = scrape_airdates(7)
+    islanders = scrape_islanders(7)['name'].to_list()
 
     li_update = (
         comment_update

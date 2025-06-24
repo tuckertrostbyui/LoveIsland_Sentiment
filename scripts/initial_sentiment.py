@@ -10,6 +10,7 @@ import ast
 import datetime as dt
 from scripts.airdate_scrape import scrape_airdates
 from scripts.islander_scrape import scrape_islanders
+import spacy
 
 # Load Model
 tokenizer = AutoTokenizer.from_pretrained("cardiffnlp/twitter-roberta-base-sentiment")
@@ -28,17 +29,35 @@ def get_sentiment_score(text):
         'compound': scores[0][2].item() - scores[0][0].item()
     }
 
-# Targeted Sentiment Function
+
+
+
+nlp = spacy.load("en_core_web_sm")
+
 def targeted_sentiment(comment, islanders):
     islander_sentiment = {}
-    for sentence in sent_tokenize(comment):
-        for name in islanders:
-            if re.search(rf'\b{name}\b', sentence, re.IGNORECASE):
-                result = get_sentiment_score(sentence)
-                if name not in islander_sentiment:
-                    islander_sentiment[name] = []
-                islander_sentiment[name].append(result['compound'])
+    doc = nlp(comment)
+
+    for sent in doc.sents:
+        sentence_text = sent.text
+        # Split each sentence into smaller chunks by contrastive conjunctions and commas
+        raw_chunks = re.split(r'\bbut\b|\band\b|,', sentence_text, flags=re.IGNORECASE)
+
+        for chunk in raw_chunks:
+            if len(chunk.strip()) == 0:
+                continue
+            chunk_doc = nlp(chunk)
+            result = get_sentiment_score(chunk)
+            chunk_lower = chunk.lower()
+
+            for name in islanders:
+                if name.lower() in chunk_lower:
+                    if name not in islander_sentiment:
+                        islander_sentiment[name] = []
+                    islander_sentiment[name].append(result["compound"])
+
     return {name: np.mean(scores) for name, scores in islander_sentiment.items()}
+
 
 # Load Data
 
