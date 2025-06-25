@@ -8,8 +8,8 @@ from nltk.tokenize import sent_tokenize
 nltk.download('punkt')
 import ast
 import datetime as dt
-from scripts.airdate_scrape import scrape_airdates
-from scripts.islander_scrape import scrape_islanders
+from airdate_scrape import scrape_airdates
+from islander_scrape import scrape_islanders
 import spacy
 
 # Load Model
