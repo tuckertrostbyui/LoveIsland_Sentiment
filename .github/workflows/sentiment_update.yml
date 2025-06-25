@@ -44,3 +44,19 @@ jobs:
           git commit -m "Add new comment update file" || echo "No changes to commit"
           git push
 
+      - name: Sync with Hugging Face Space
+        run: |
+          git config --global user.email "tro18011@byui.edu"
+          git config --global user.name "Tucker Trost"
+
+          git clone https://tuckertrostbyui:$HF_TOKEN@huggingface.co/spaces/tuckertrostbyui/loveisland_app space
+
+          rsync -av --exclude='.git' . space/
+          cd space
+          git add .
+          git commit -m "Auto-sync from GitHub after sentiment update" || echo "No changes to commit"
+          git push
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+
