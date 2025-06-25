@@ -2,12 +2,18 @@ name: Daily Sentiment Update
 
 on:
   schedule:
-    - cron: "0 23 * * *"  # Every day at 11 PM UTC = 4 PM MST (during daylight saving)
-  workflow_dispatch:       # Optional: lets you run it manually
+    - cron: "0 23 * * *"  # Every day at 11 PM UTC = 4 PM MST
+  workflow_dispatch:
 
 jobs:
   run-daily-update:
     runs-on: ubuntu-latest
+
+    env:  # Pass secrets as environment variables
+      REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+      REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+      REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
     steps:
       - name: Checkout repo

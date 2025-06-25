@@ -8,15 +8,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-reddit_client_id = os.getenv('reddit_client_id')
-reddit_client_secret = os.getenv('reddit_client_secret')
-reddit_user_agent = os.getenv('reddit_user_agent')
+# Load .env locally, skip in GitHub Actions
+if os.getenv("GITHUB_ACTIONS") != "true":
+    load_dotenv()
 
-# Initialize Reddit API with PRAW
 reddit = praw.Reddit(
-    client_id = reddit_client_id,
-    client_secret = reddit_client_secret,
-    user_agent = reddit_user_agent
+    client_id=os.getenv("REDDIT_CLIENT_ID"),
+    client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
+    user_agent=os.getenv("REDDIT_USER_AGENT")
 )
 
 # --- Optimized Full Scraper ---
