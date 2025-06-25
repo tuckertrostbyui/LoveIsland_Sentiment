@@ -12,3 +12,4 @@ nltk
 torch
 numpy
 spacy
+lxml
