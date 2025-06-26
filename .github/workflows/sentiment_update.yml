@@ -40,8 +40,9 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add data/comment_updates/*.parquet
-          git commit -m "Add new comment update file" || echo "No changes to commit"
+          git add data/comment_updates/*.parquet || true
+          git add data/season7_comments/*.parquet || true
+          git commit -m "Add new comment update files" || echo "No changes to commit"
           git push
 
       - name: Sync with Hugging Face Space
@@ -51,7 +52,7 @@ jobs:
 
           git clone https://tuckertrostbyui:$HF_TOKEN@huggingface.co/spaces/tuckertrostbyui/loveisland_app space
 
-          rsync -av --exclude='.git' . space/
+          rsync -av --exclude='.git' --exclude='__pycache__' . space/
           cd space
           git add .
           git commit -m "Auto-sync from GitHub after sentiment update" || echo "No changes to commit"
@@ -59,4 +60,9 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
+
+
+
+
+          
 
