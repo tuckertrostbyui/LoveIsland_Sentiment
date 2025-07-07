@@ -64,7 +64,9 @@ def targeted_sentiment(comment, islanders):
 # all_comments = pd.read_parquet('../data/season7_all_episode_comments.parquet')
 # episode_airdates = scrape_airdates(7)
 
-islanders = scrape_islanders(7)['name'].to_list()
+islanders_df = pd.read_parquet("data/islander_data/s7_islanders.parquet")
+islanders = islanders_df['name'].dropna().to_list()
+
 
 def extract_episode_number(title):
     match = re.search(r'Episode (\d+)', title)
