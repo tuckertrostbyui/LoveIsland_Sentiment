@@ -17,3 +17,4 @@ Pillow
 rembg
 face_recognition
 beautifulsoup4
+onnxruntime
