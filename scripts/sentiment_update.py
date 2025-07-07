@@ -9,7 +9,9 @@ def apply_sentiment():
 
     comment_update = update_with_new_episodes(reddit)
     episode_airdates = scrape_airdates(7)
-    islanders = scrape_islanders(7)['name'].to_list()
+    islanders_df = pd.read_parquet("data/islander_data/s7_islanders.parquet")
+    islanders = islanders_df['name'].dropna().to_list()
+
 
     li_update = (
         comment_update
