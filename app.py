@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 from scripts.summarizer import load_summarizer, summarize_comments, classify_sentiment
 
+
 st.set_page_config(
     page_title="Love Island Sentiment",  
     page_icon="🏝️", 
@@ -17,6 +18,8 @@ st.markdown("<h6 style='text-align: center; color: gray;'>Analysing Reddit Senti
 # Load the data
 parquet_files = glob.glob("data/comment_updates/*.parquet")
 df = pd.concat([pd.read_parquet(f) for f in parquet_files], ignore_index=True)
+
+islander_data = pd.read_parquet('data/islander_data/s7_islanders.parquet')
 
 # Convert AirDate to datetime
 df["airdate"] = pd.to_datetime(df["airdate"])
@@ -88,6 +91,10 @@ with tab1:
             st.write(summarize_comments(comments_df, summarizer,selected_islander))
 
 
+    st.write('Picture test')
+    islander_image = islander_data[islander_data['name']==selected_islander]
+
+    st.image(islander_image['filepath'].values[0])
 with tab2:
     st.markdown("""
 ## ℹ️ About This Dashboard

@@ -15,7 +15,7 @@ def scrape_airdates(season_num):
         raise ValueError("❌ Could not find a column containing 'Original release date'")
     
     episodes_clean = (
-        episodes[['Title', release_col[0]]]
+        episodes[['Title','Day(s)', release_col[0]]]
         .loc[~episodes['Title'].str.contains("Week", case=False, na=False)]
         .rename(columns={'Title': 'episode', release_col[0]: 'airdate'})
         .assign(

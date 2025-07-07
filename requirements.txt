@@ -13,3 +13,7 @@ torch
 numpy
 spacy
 lxml
+Pillow
+rembg
+face_recognition
+beautifulsoup4
