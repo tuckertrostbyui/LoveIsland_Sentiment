@@ -1,19 +1,17 @@
 import pandas as pd
 import re
-from airdate_scrape import scrape_airdates
 import os
+import requests
+from io import BytesIO
+from PIL import Image
+from rembg import remove, new_session
+import numpy as np
+from bs4 import BeautifulSoup
+import face_recognition
+from huggingface_hub import HfApi
+from airdate_scrape import scrape_airdates
 
 def scrape_cast_images():
-    import pandas as pd
-    from io import BytesIO
-    import requests
-    from PIL import Image
-    from rembg import remove, new_session
-    import numpy as np
-    from bs4 import BeautifulSoup
-    import face_recognition
-
-    # Load a more robust model for human background removal
     session = new_session("u2net_human_seg")
 
     def extract_first_name(name):
@@ -77,7 +75,6 @@ def scrape_cast_images():
         cropped_image = rgba_image.crop((x_start, y_start, x_end, y_end))
         return cropped_image.resize((600, 500), Image.LANCZOS)
 
-    # ---- Main Workflow ---- #
     cast_df = scrape_love_island_cast()
     processed_images = []
 
@@ -94,6 +91,16 @@ def scrape_cast_images():
     cast_df["image"] = processed_images
     return cast_df
 
+def upload_images_to_hf(local_image_dir, repo_id, path_in_repo="images"):
+    from huggingface_hub import HfApi
+    api = HfApi(token=os.getenv("HF_TOKEN"))
+    api.upload_folder(
+        folder_path=local_image_dir,
+        repo_id=repo_id,
+        repo_type="dataset",
+        path_in_repo=path_in_repo,
+    )
+    print("✅ Uploaded images to Hugging Face dataset.")
 
 def scrape_islanders(season_num):
     def map_day_to_episode(day, episodes_df):
@@ -116,7 +123,7 @@ def scrape_islanders(season_num):
         )
         return islanders_df
 
-    # Scrape Wikipedia table
+    # Step 1: Scrape base metadata
     url = f'https://en.wikipedia.org/wiki/Love_Island_(American_TV_series)_season_{season_num}'
     tables = pd.read_html(url)
     islanders = pd.DataFrame(tables[1]).assign(
@@ -128,7 +135,7 @@ def scrape_islanders(season_num):
         Exited=lambda x: x.Exited.str.extract(r'(\d+)')[0].astype('Int64')
     )
 
-    # Scrape and store images
+    # Step 2: Scrape and save images locally
     image_folder = f"data/islander_data/images"
     os.makedirs(image_folder, exist_ok=True)
 
@@ -143,19 +150,30 @@ def scrape_islanders(season_num):
             image.save(path)
             cast_images.at[i, "filepath"] = path
 
-    # Merge image file paths into islander data
+    # Step 3: Upload images to HF Dataset
+    hf_repo_id = "tuckertrostbyui/love_island_images"
+    upload_images_to_hf(image_folder, hf_repo_id)
+
+    # Step 4: Update filepaths with hosted URLs
+    cast_images["filepath"] = cast_images["name_lower"].apply(
+        lambda name: f"https://huggingface.co/datasets/{hf_repo_id}/resolve/main/images/{name}_s{season_num}.png"
+    )
+
+    # Step 5: Merge + attach episode info
     islanders = islanders.merge(
         cast_images[["name_lower", "filepath"]], on="name_lower", how="left"
     )
 
-    # Attach episode entry/exit numbers
     episodes = scrape_airdates(season_num)
     islanders = islander_episodes(islanders, episodes)
 
-    # Save to parquet
+    # Step 6: Save
     output_path = f"data/islander_data/s{season_num}_islanders.parquet"
     islanders.to_parquet(output_path, index=False)
+    print(f"✅ Saved islanders dataset: {output_path}")
 
-    return 
+    return
 
-scrape_islanders(7)
+# Call it like usual
+if __name__ == "__main__":
+    scrape_islanders(7)
