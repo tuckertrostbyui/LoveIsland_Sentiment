@@ -6,7 +6,7 @@ def scrape_airdates(season_num):
     tables = pd.read_html(url)
     episodes = pd.DataFrame(tables[3])
 
-    # Clean column names
+    # Clean the column names
     episodes.columns = episodes.columns.str.strip()
 
     # Dynamically find the release date column
