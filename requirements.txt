@@ -15,6 +15,5 @@ spacy
 lxml
 Pillow
 rembg
-face-recognition-binaries
 beautifulsoup4
 onnxruntime
