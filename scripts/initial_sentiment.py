@@ -9,7 +9,6 @@ nltk.download('punkt')
 import ast
 import datetime as dt
 from airdate_scrape import scrape_airdates
-from islander_scrape import scrape_islanders
 import spacy
 
 # Load Model
