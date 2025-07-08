@@ -3,7 +3,7 @@ import ast
 from reddit_api import reddit , update_with_new_episodes
 from initial_sentiment import targeted_sentiment, extract_episode_number
 from airdate_scrape import scrape_airdates
-from islander_scrape import scrape_islanders
+
 
 def apply_sentiment():
 
