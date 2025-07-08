@@ -34,9 +34,6 @@ jobs:
           pip install -r dev-requirements.txt
           python -m spacy download en_core_web_sm
 
-      - name: Run islander scrape (with image upload)
-        run: python scripts/islander_scrape.py
-
       - name: Run sentiment update
         run: python scripts/sentiment_update.py
 
