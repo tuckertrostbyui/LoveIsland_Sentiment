@@ -17,6 +17,7 @@ def scrape_airdates(season_num):
     episodes_clean = (
         episodes[['Title','Day(s)', release_col[0]]]
         .loc[~episodes['Title'].str.contains("Week", case=False, na=False)]
+        .loc[~episodes['Title'].str.contains("Special", case=False, na=False)]
         .rename(columns={'Title': 'episode', release_col[0]: 'airdate'})
         .assign(
             episode_num=lambda x: x.episode.str.extract(r'(\d+)').astype(int),

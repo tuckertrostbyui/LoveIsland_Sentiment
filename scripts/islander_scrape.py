@@ -1,15 +1,15 @@
-# import pandas as pd
-# import re
-# import os
-# import requests
-# from io import BytesIO
-# from PIL import Image
-# from rembg import remove, new_session
-# import numpy as np
-# from bs4 import BeautifulSoup
-# import face_recognition
-# from huggingface_hub import HfApi
-# from airdate_scrape import scrape_airdates
+import pandas as pd
+import re
+import os
+import requests
+from io import BytesIO
+from PIL import Image
+from rembg import remove, new_session
+import numpy as np
+from bs4 import BeautifulSoup
+import face_recognition
+from huggingface_hub import HfApi
+from airdate_scrape import scrape_airdates
 
 # def scrape_cast_images():
 #     session = new_session("u2net_human_seg")
@@ -177,3 +177,62 @@
 # # Call it like usual
 # if __name__ == "__main__":
 #     scrape_islanders(7)
+
+
+
+import pandas as pd
+import re
+import os
+from airdate_scrape import scrape_airdates
+
+def update_islander_parquet(season_num):
+    def map_day_to_episode(day, episodes_df):
+        for _, row in episodes_df.iterrows():
+            match = re.findall(r'\d+', row["Day(s)"])
+            if not match:
+                continue
+            start_day = int(match[0])
+            end_day = int(match[-1])
+            if start_day <= day <= end_day:
+                return row["episode_num"]
+        return pd.NA
+
+    def islander_episodes(islanders_df, episodes_df):
+        islanders_df["episode_entered"] = islanders_df["Entered"].apply(
+            lambda d: map_day_to_episode(d, episodes_df) if pd.notna(d) else pd.NA
+        )
+        islanders_df["episode_exited"] = islanders_df["Exited"].apply(
+            lambda d: map_day_to_episode(d, episodes_df) if pd.notna(d) else pd.NA
+        )
+        return islanders_df
+
+    # Step 1: Scrape islander table
+    url = f'https://en.wikipedia.org/wiki/Love_Island_(American_TV_series)_season_{season_num}'
+    tables = pd.read_html(url)
+    islanders = pd.DataFrame(tables[1]).assign(
+        name=lambda x: x.Islander.apply(
+            lambda x: re.search(r'["“](.*?)["”]', x).group(1) if any(char in x for char in ['"', '“']) else x.split()[0]
+        ),
+        name_lower=lambda x: x.name.str.lower(),
+        Entered=lambda x: x.Entered.str.extract(r'(\d+)')[0].astype("Int64"),
+        Exited=lambda x: x.Exited.str.extract(r'(\d+)')[0].astype("Int64")
+    )
+
+    # Step 2: Load old parquet (to keep image paths)
+    output_path = f"data/islander_data/s{season_num}_islanders.parquet"
+    if os.path.exists(output_path):
+        old = pd.read_parquet(output_path)
+        if "filepath" in old.columns:
+            islanders = islanders.merge(old[["name_lower", "filepath"]], on="name_lower", how="left")
+
+    # Step 3: Scrape airdates and map episodes
+    episodes = scrape_airdates(season_num)
+    islanders = islander_episodes(islanders, episodes)
+
+    # Step 4: Save updated parquet
+    islanders.to_parquet(output_path, index=False)
+    print(f"✅ Parquet updated at {output_path}")
+
+
+
+update_islander_parquet(7)

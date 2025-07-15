@@ -67,11 +67,18 @@ islanders_df = pd.read_parquet("data/islander_data/s7_islanders.parquet")
 islanders = islanders_df['name'].dropna().to_list()
 
 
-def extract_episode_number(title):
-    match = re.search(r'Episode (\d+)', title)
+def extract_episode_number(title: str) -> int:
+    # Handle finale edge case
+    if "finale" in title.lower():
+        return 36
+
+    match = re.search(r"[Ee]pisode\s+(\d+)", title)
     if match:
         return int(match.group(1))
+    
+    # Optional: fallback to None if no number
     return None
+
 
 # li_initial = all_comments\
 #     .assign(
