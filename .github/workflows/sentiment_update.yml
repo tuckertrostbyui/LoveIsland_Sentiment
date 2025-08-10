@@ -1,8 +1,8 @@
 name: Daily Sentiment Update
 
 on:
-  schedule:
-    - cron: "0 23 * * *"  # Every day at 11 PM UTC = 4 PM MST
+  # schedule:
+  #   - cron: "0 23 * * *"  # Every day at 11 PM UTC = 4 PM MST
   workflow_dispatch:
 
 permissions:
